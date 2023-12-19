@@ -12,7 +12,7 @@
 
 You need a Spotify Premium Subscription
 
-  1. go to [[spotify developer](https://developer.spotify.com/)
+  1. go to [spotify developer](https://developer.spotify.com/)
   2. create an app and copy secret and client id you will need it in the next step
   3. In your Spoitfy Dashboard edit the `Redirect URI` to http://localhost:3000/api/auth/callback/spotify
 
