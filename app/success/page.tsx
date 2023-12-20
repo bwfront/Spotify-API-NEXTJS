@@ -1,36 +1,35 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
 
 export default function Page() {
   const { data: session, status } = useSession();
-  console.log(session, status); // session log
+  const [spotifyData, setSpotifyData] = useState("");
+  //console.log(session, status); // session log
+  //session - user.mail, user.name
 
-  const resData = fetchSpotify();
+  useEffect(() => {
+    fetch("/api/spotify")
+      .then((res) => res.json())
+      .then((data) => setSpotifyData(data))
+      .catch((err) => console.log(err));
+  }, []);
+
+  
+  useEffect(() => {
+    console.log("Spotify Data:", spotifyData);
+  }, [spotifyData]);
 
   if (status === "loading") return <div>Loading...</div>;
 
   if (status === "unauthenticated") return <div>Unauthenticated</div>;
 
-  return <div>Logged In</div>;
+  return (
+    <div>
+      <h1>Spotify Data</h1>
+      <pre>{JSON.stringify(spotifyData, null, 2)}</pre>
+    </div>
+  );
 }
 
-function fetchSpotify() {
-  useEffect(() => {
-    fetch("/api/spotify")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        //Can set the data here or pass it to the next then block
-        return data;
-      })
-      .catch((error) => {
-        //Can log the error here or pass it to the next catch
-        return error;
-      });
-  }, []);
-}
