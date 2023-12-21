@@ -1,19 +1,26 @@
 "use client";
 import LoadingScreen from "@/components/LoadingScreen";
+import ShowPlaylists from "@/components/ShowPlaylists";
 import Unauthenticated from "@/components/Unauthendticated";
+import { SpotifyData } from "@/interfaces/SpotifyData";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-
-export default function Home() {
+import { useToken } from '../contexts/TokenContext';
+export default function Page() {
   const { data: session, status } = useSession();
-  const [spotifyData, setSpotifyData] = useState("");
-  //console.log(session, status); // session log
-  //session - user.mail, user.name
+  const [spotifyData, setSpotifyData] = useState<SpotifyData | null>(null);
+  const { isTokenExpired, setIsTokenExpired } = useToken();
 
   useEffect(() => {
     if (status === "authenticated") {
       fetch("/api/spotify")
-        .then((res) => res.json())
+        .then((res) => {
+          if (res.status === 401) {
+            setIsTokenExpired(true);
+            return null;
+          }
+          return res.json();
+        })
         .then((data) => {
           setSpotifyData(data);
         })
@@ -29,7 +36,7 @@ export default function Home() {
     return <LoadingScreen text="Loading authenticated status..." />;
   }
 
-  if (status === "unauthenticated") {
+  if (status === "unauthenticated" || isTokenExpired) {
     return <Unauthenticated />;
   }
 
@@ -37,6 +44,11 @@ export default function Home() {
     return <LoadingScreen text="Loading Spotify information..." />;
   }
 
-  return <div>Fine</div>;
-
+  if (spotifyData.data.allPlaylists.length != 0) {
+    return (
+      <div className="mt-14">
+        <ShowPlaylists playlists={spotifyData.data.allPlaylists} />
+      </div>
+    );
+  }
 }

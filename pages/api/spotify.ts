@@ -10,25 +10,36 @@ export default async function handler(
   if (!session) {
     return res.status(401).json({ error: "Unauthorized" });
   }
-
+  
   const accessToken = session.accessToken;
 
   if (!accessToken) {
     return res.status(401).json({ error: "Access token not found" });
   }
 
-  const profile = await fetchProfile(accessToken);
-  const playlists = await fetchAllPlaylists(accessToken);
-  const playlist = await fetchPlaylist(accessToken, '4RYVqRwRs2wCf9kQmCDtw1');
+  try {
+    const profile = await fetchProfile(accessToken);
+    const playlists = await fetchAllPlaylists(accessToken);
+    const playlist = await fetchPlaylist(accessToken, '4RYVqRwRs2wCf9kQmCDtw1');
 
-  const data = {
-    singlePlaylist: playlist,
-    profile: profile,
-    allPlaylists: playlists,
-    accessToken: accessToken,
+    if (profile.error || playlists.error || playlist.error) {
+      return res.status(401).json({ error: "The access token expired" });
+    }
+
+    const data = {
+      singlePlaylist: playlist,
+      profile: profile,
+      allPlaylists: playlists,
+      accessToken: accessToken,
+    }
+
+    res.status(200).json({ message: "Success", data: data });
+  } catch (error) {
+    if (error.message === 'Token expired') {
+      return res.status(401).json({ error: "Access token expired" });
+    }
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-  // Once done, send back the response
-  res.status(200).json({ message: "Success", data: data });
 }
 
 async function fetchProfile(token: string): Promise<any> {

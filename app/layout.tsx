@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Provider from "@/lib/provider";
 import NavBar from "@/components/NavBar";
+import { TokenProvider } from "@/contexts/TokenContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,8 +18,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <Provider>
         <body className={inter.className}>
-          <NavBar />
-          {children}
+          <TokenProvider>
+            <NavBar />
+            {children}
+          </TokenProvider>
         </body>
       </Provider>
     </html>
