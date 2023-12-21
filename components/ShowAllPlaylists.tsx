@@ -1,14 +1,18 @@
 import { useState } from "react";
 import ShowSelectPlaylist from "./ShowSelectPlaylist";
+import { useRouter } from 'next/navigation';
 
 export default function ShowPlaylists(props: any) {
   const [selectedPlaylist, setSelectedPlaylist] = useState<string | null>(null);
+
+  const router = useRouter(); // Initialize the useRouter hook
 
   function handleClick(id: string) {
     if(id === selectedPlaylist) {
       setSelectedPlaylist(null);
       return;
     }else{
+      router.push(`/${id}`);
       setSelectedPlaylist(id);
     }
   }
@@ -28,7 +32,7 @@ export default function ShowPlaylists(props: any) {
               onClick={() => handleClick(playlist.id)}
             >
               <img
-                className="h-44 w-44 object-cover"
+                className="h-44 w-44 object-cover rounded-full"
                 src={playlist.images[0].url}
                 alt="playlist image"
               />
@@ -37,7 +41,6 @@ export default function ShowPlaylists(props: any) {
           );
         })}
       </div>
-      <ShowSelectPlaylist id={selectedPlaylist}/>
     </div>
   );
 }

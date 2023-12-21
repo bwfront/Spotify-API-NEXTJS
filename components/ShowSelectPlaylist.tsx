@@ -1,30 +1,22 @@
+"use client";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
-type SelectPlaylistProps = {
-  id: string | null;
-};
+interface Props {
+  id: string
+}
 
-export default function ShowSelectPlaylist(props: SelectPlaylistProps) {
+export default function ShowSelectPlaylist(props: Props) {
   const { data: session, status } = useSession();
   const [playlist, setPlaylist] = useState<any>(null);
-  const id = props.id;
+
 
   useEffect(() => {
-    if (id) {
-      fetchPlaylist(id).then((data) => {
-        setPlaylist(data);
-      });
-    }
-  }, [id]);
-
-  useEffect(() => {
-    console.log(playlist);
-  }, [playlist]);
-
-  if (props.id === null) {
-    return <div></div>;
-  }
+    fetchPlaylist(props.id).then((data) => {
+      setPlaylist(data);
+    });
+  });
 
   async function fetchPlaylist(id: string): Promise<any> {
     if (session?.accessToken) {
@@ -39,19 +31,34 @@ export default function ShowSelectPlaylist(props: SelectPlaylistProps) {
   if (playlist) {
     return (
       <>
-        <div className="mt-12 bg-gray-200 rounded p-4 w-full">
-          <div>
-            <img
-              className="h-24 w-24 object-cover"
-              src={playlist.images[0].url}
-              alt=""
-            />
-            <div>{playlist.name}</div>
+        <div className="mt-12 bg-gray-200 rounded px-20 py-4 w-full">
+          <div className="mb-4">Selected Playlist:</div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <img
+                className="h-24 w-24 object-cover rounded-full"
+                src={playlist.images[0].url}
+                alt="playlist cover"
+              />
+              <a
+                className="text-2xl hover:underline cursor-pointer"
+                target="_blank"
+                href={`https://open.spotify.com/playlist/${playlist.id}`}
+              >
+                {playlist.name}
+              </a>
+            </div>
+            <Link href={`/${playlist.id}/convert`}
+            >
+              <div className="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+                Convert
+              </div>
+            </Link>
           </div>
         </div>
-        <div className="mt-2 h-96 overflow-y-scroll bg-gray-200 rounded p-4 w-full">
-          <div>
-            <div className="flex flex-col gap-3">
+        <div className="mt-2 bg-gray-200 rounded px-20 py-4 w-full">
+          <div className="h-96 overflow-y-scroll">
+            <div className="flex flex-col gap-3 px-3">
               {playlist.tracks.items.map((track: any) => {
                 return (
                   <div key={track.track.id} className="flex justify-between">
@@ -59,7 +66,7 @@ export default function ShowSelectPlaylist(props: SelectPlaylistProps) {
                       <img
                         className="h-16 w-16 object-cover"
                         src={track.track.album.images[0].url}
-                        alt=""
+                        alt="playlist cover"
                       />
                       <div>
                         <div>{track.track.name}</div>
