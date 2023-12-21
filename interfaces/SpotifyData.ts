@@ -7,3 +7,9 @@ export interface SpotifyData {
   };
   message: string;
 }
+
+export interface SpotifyPlaylist {
+  data: {
+    singlePlaylist: any;
+  };
+}

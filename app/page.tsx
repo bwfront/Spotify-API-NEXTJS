@@ -1,6 +1,6 @@
 "use client";
 import LoadingScreen from "@/components/LoadingScreen";
-import ShowPlaylists from "@/components/ShowPlaylists";
+import ShowPlaylists from "@/components/ShowAllPlaylists";
 import Unauthenticated from "@/components/Unauthendticated";
 import { SpotifyData } from "@/interfaces/SpotifyData";
 import { useSession } from "next-auth/react";
@@ -27,10 +27,6 @@ export default function Page() {
         .catch((err) => console.log(err));
     }
   }, [status]);
-
-  useEffect(() => {
-    console.log("Spotify Data:", spotifyData);
-  }, [spotifyData]);
 
   if (status === "loading") {
     return <LoadingScreen text="Loading authenticated status..." />;

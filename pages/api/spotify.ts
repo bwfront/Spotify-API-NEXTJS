@@ -20,14 +20,12 @@ export default async function handler(
   try {
     const profile = await fetchProfile(accessToken);
     const playlists = await fetchAllPlaylists(accessToken);
-    const playlist = await fetchPlaylist(accessToken, '4RYVqRwRs2wCf9kQmCDtw1');
 
-    if (profile.error || playlists.error || playlist.error) {
+    if (profile.error || playlists.error ) {
       return res.status(401).json({ error: "The access token expired" });
     }
 
     const data = {
-      singlePlaylist: playlist,
       profile: profile,
       allPlaylists: playlists,
       accessToken: accessToken,
@@ -52,13 +50,6 @@ async function fetchProfile(token: string): Promise<any> {
 
 async function fetchAllPlaylists(token: string): Promise<any> {
   const result = await fetch("https://api.spotify.com/v1/me/playlists", {
-      method: "GET", headers: { Authorization: `Bearer ${token}` }
-  });
-  return await result.json();
-}
-
-async function fetchPlaylist(token: string, id: string): Promise<any> {
-  const result = await fetch(`https://api.spotify.com/v1/playlists/${id}`, {
       method: "GET", headers: { Authorization: `Bearer ${token}` }
   });
   return await result.json();
